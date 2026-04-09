@@ -48,3 +48,21 @@ else:
         print(f"  [Worker {rank}] Processing Order {order['id']} ({order['item']})...")
         
         time.sleep(random.uniform(1, 3))
+
+comm.send(order, dest=0)
+print(f"  [Worker {rank}] Order {order['id']} sent back to Master.")
+
+if rank == 0:
+    print("\nMaster is waiting to collect completed orders...")
+    for _ in range(len(orders)):
+        finished_task = comm.recv(source=MPI.ANY_SOURCE)
+        completed_orders.append(finished_task)
+
+        comm.send(order, dest=0)
+        print(f"  [Worker {rank}] Order {order['id']} sent back to Master.")
+
+if rank == 0:
+    print("\nMaster is waiting to collect completed orders...")
+    for _ in range(len(orders)):
+        finished_task = comm.recv(source=MPI.ANY_SOURCE)
+        completed_orders.append(finished_task)
