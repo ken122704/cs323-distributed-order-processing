@@ -66,3 +66,11 @@ if rank == 0:
     for _ in range(len(orders)):
         finished_task = comm.recv(source=MPI.ANY_SOURCE)
         completed_orders.append(finished_task)
+
+
+comm.Barrier()
+
+if rank == 0:
+    print("\n--- Final Processed Order List ---")
+    for task in completed_orders:
+        print(f"Completed: {task['item']} (ID: {task['id']})")
