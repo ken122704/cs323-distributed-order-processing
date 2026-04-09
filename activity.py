@@ -18,7 +18,7 @@ if rank == 0:
     print(f"Master Process (Rank {rank}) is online. Total processes: {size}\n")
 
     if rank == 0:
-    # 5-8 orders as required
+    
         orders = [
             {'id': 1, 'item': 'Laptop'}, {'id': 2, 'item': 'Mouse'},
             {'id': 3, 'item': 'Monitor'}, {'id': 4, 'item': 'Keyboard'},
@@ -28,13 +28,23 @@ if rank == 0:
     print(f"Master: Distributing {len(orders)} orders...")
 
     for i, order in enumerate(orders):
-        # Assign orders to workers (Rank 1 to size-1)
+        
         worker_id = (i % (size - 1)) + 1
         comm.send(order, dest=worker_id)
     
-    # Send 'None' to tell workers to stop waiting
+    
     for i in range(1, size):
         comm.send(None, dest=i)
         
-    # Setup list to collect results later
+    
     completed_orders = []
+
+else:
+    while True:
+        order = comm.recv(source=0)
+        if order is None: 
+            break
+            
+        print(f"  [Worker {rank}] Processing Order {order['id']} ({order['item']})...")
+        
+        time.sleep(random.uniform(1, 3))
